@@ -5,10 +5,9 @@ from google.genai import types
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", os.urandom(24).hex())
-api_key = "AIzaSyD0HbUNoVN77YfuHyTilzLbXMIxGlh6D9w"
 
 # Configure Gemini
-client = genai.Client(api_key= api_key)
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Helper to convert session history to GenAI format
 def to_genai_messages(history):
@@ -30,12 +29,12 @@ def chat():
                 {
                     "role": "user",
                     "parts": [{
-                        "text": f"You are {character}. Stay in character, " \
+                        "text": f"You are {character}. Stay in character, "\
                                 "maintain continuity, and never break character."
                     }]
                 }
             ]
-
+            
             # Generate initial response
             try:
                 response = client.models.generate_content(
@@ -48,8 +47,8 @@ def chat():
                 )
                 session["history"].append({
                     "role": "model",
-                    "parts": [{"text": response.text if hasattr(response, 'text') else
-                    f"Greetings! I am {character}. How may I assist you?"}]
+                    "parts": [{"text": response.text if hasattr(response, 'text') else 
+                              f"Greetings! I am {character}. How may I assist you?"}]
                 })
             except Exception as e:
                 session["history"].append({
@@ -62,7 +61,7 @@ def chat():
                 "role": "user",
                 "parts": [{"text": request.form["user_input"].strip()}]
             })
-
+            
             try:
                 response = client.models.generate_content(
                     model="gemini-2.0-flash",
@@ -74,15 +73,15 @@ def chat():
                 )
                 session["history"].append({
                     "role": "model",
-                    "parts": [{"text": response.text if hasattr(response, 'text') else
-                    "I need to consult the stars... (response error)"}]
+                    "parts": [{"text": response.text if hasattr(response, 'text') else 
+                              "I need to consult the stars... (response error)"}]
                 })
             except Exception as e:
                 session["history"].append({
                     "role": "model",
                     "parts": [{"text": f"Error: {str(e)}"}]
                 })
-
+            
             # Keep last 5 exchanges + system prompt
             if len(session["history"]) > 11:
                 session["history"] = session["history"][:1] + session["history"][-10:]
