@@ -69,7 +69,7 @@ You can also test the chatbot via **cURL** or **Postman**:
 ```sh
 curl -X POST -H "Content-Type: application/json" \
      -d '{"character_name":"Sherlock Holmes","user_input":"How do you solve a case?"}' \
-     https://your-render-url.onrender.com/chat
+     (https://chatchar-fuzu.onrender.com/)
 ```
 
 ## 🏗️ Future Improvements  
